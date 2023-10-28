@@ -1,10 +1,13 @@
 const asyncHandler = require("express-async-handler")
+const Contact = require("../models/contact_model")
+
 //@desc GET all contacts
 //@ route GET/api/contacts
 //@accesspublic
 
 const getContacts = asyncHandler(async (req, res) => {
-    res.status(200).json({ "message": "get all contacts" })
+    const contacts = await Contact.find()
+    res.status(200).json(contacts)
 })
 
 //@desc create new contact
@@ -16,9 +19,16 @@ const createContact = asyncHandler(async (req, res) => {
     const { name, email, phone } = req.body
     if (!name || !email || !phone) {
         res.status(400)
-        throw new Error("ALL fields are mandatory")
+        throw new Error("ALL fields are mandatory !")
     }
-    res.status(201).json({ "message": "create contact" })
+    const contact = await Contact.create({
+        name,
+        email,
+        phone,
+    })
+
+
+    res.status(201).json(contact)
 })
 
 //@desc GET contact
@@ -26,7 +36,12 @@ const createContact = asyncHandler(async (req, res) => {
 //@accesspublic
 
 const getContact = asyncHandler(async (req, res) => {
-    res.status(200).json({ "message": `get contact for ${req.params.id} ` })
+    const contact = await Contact.findById(req.params.id);
+    if (!contact) {
+        res.status(404)
+        throw new Error("Contact not found")
+    }
+    res.status(200).json(contact)
 })
 
 //@desc update contact
@@ -34,7 +49,18 @@ const getContact = asyncHandler(async (req, res) => {
 //@accesspublic
 
 const updateContact = asyncHandler(async (req, res) => {
-    res.status(200).json({ "message": `update contact for ${req.params.id} ` })
+    const contact = await Contact.findById(req.params.id);
+    if (!contact) {
+        res.status(404)
+        throw new Error("Contact not found")
+    }
+
+    const updatedContact = await Contact.findByIdAndUpdate(req.params.id,
+     req.body,
+    { new: true }
+    )
+
+    res.status(200).json(updatedContact)
 })
 
 
@@ -42,9 +68,18 @@ const updateContact = asyncHandler(async (req, res) => {
 //@desc del contact
 //@ route delete/api/contacts/:id
 //@accesspublic
-
+    //TODO:fix it del function is not working
 const delContact = asyncHandler(async (req, res) => {
-    res.status(200).json({ "message": `delete contact for ${req.params.id}` })
+   // console.log(req.params.id)
+   const {id} = req.params
+    const contact = await Contact.findById(id);
+    if (!contact) {
+        res.status(404)
+        throw new Error("Contact not found")
+    }
+    //console.log(contact)
+    const deletedContact = await Contact.deleteOne({_id:id})
+    res.status(200).json(deletedContact)
 })
 
 

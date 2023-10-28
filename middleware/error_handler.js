@@ -16,18 +16,21 @@ const errorHandler = (err, req, res, next) => {
                 message: err.message,
                 stackTrace: err.stack
             })
+            break;
         case constants.FORBIDDEN:
             res.json({
                 title: "FORBIDDEN",
                 message: err.message,
                 stackTrace: err.stack
             })
+            break;
         case constants.UNAUTHORIZED:
             res.json({
                 title: "UNAUTHORIZED",
                 message: err.message,
                 stackTrace: err.stack
             })
+            break;
 
         case constants.SERVER_ERROR:
             res.json({
@@ -35,9 +38,14 @@ const errorHandler = (err, req, res, next) => {
                 message: err.message,
                 stackTrace: err.stack
             })
+            break;
 
         default:
-            console.log("no error all good!")
+            res.json({
+                title: "undefined error",
+                message: err.message,
+                stackTrace: err.stack
+            })
             break;
     }
 
